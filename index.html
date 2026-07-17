@@ -694,6 +694,65 @@
       }
     }
 
+    /* Autocomplete Dropdown Styles */
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #111111;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      margin-top: 4px;
+    }
+
+    .search-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: right;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .search-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-item:hover {
+      background: rgba(212, 175, 55, 0.15);
+    }
+
+    .search-item .item-ar {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .search-item .item-group {
+      font-size: 10px;
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold-primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 8px;
+      display: inline-block;
+    }
+
+    .search-item .item-en {
+      color: var(--text-muted);
+      font-size: 11px;
+      direction: ltr;
+      text-align: left;
+    }
+
+
     /* ========================================= */
     /* PDF TEMPLATE STYLES - GOLD CINEMATIC      */
     /* ========================================= */
@@ -1074,7 +1133,208 @@
 
   <script>
     let coachPhoto = "images/coach.jpeg";
+
+    const EXERCISES_DB = [
+      // الصدر - CHEST
+      { ar: 'بنش برس بار مسطح', en: 'Barbell Flat Bench Press', group: 'الصدر', yt: 'https://youtube.com/shorts/hWbUlkb5Ms4?si=6J4IwUQKYvpeppw_' },
+      { ar: 'بنش برس دمبل مسطح', en: 'Dumbbell Flat Bench Press', group: 'الصدر', yt: 'https://youtu.be/YQ2s_Y7g5Qk?si=baC-xyAN-PeumV3x' },
+      { ar: 'بنش برس مائل بار', en: 'Incline Barbell Bench Press', group: 'الصدر', yt: 'https://youtu.be/lJ2o89kcnxY?si=W3yLVnzqsCr20cf7' },
+      { ar: 'بنش برس مائل دمبل', en: 'Incline Dumbbell Bench Press', group: 'الصدر', yt: 'https://youtu.be/Gruq177Psnk?si=2cRTBGiY_gWuI6Cb' },
+      { ar: 'بنش برس هابط', en: 'Decline Bench Press', group: 'الصدر', yt: 'https://youtu.be/Pf1nDoqx_1A?si=mjtkNuuzW4F8xQ0y' },
+      { ar: 'سميث مشين بنش', en: 'Smith Machine Bench Press', group: 'الصدر', yt: 'https://youtu.be/O5viuEPDXKY?si=N7dxyFzCwXVP-n0j' },
+      { ar: 'تفتيح دمبل مسطح', en: 'Flat Dumbbell Fly', group: 'الصدر', yt: 'https://youtu.be/JFm8KbhjibM?si=Cz9BMqyGj91px5Xb' },
+      { ar: 'تفتيح دمبل مائل', en: 'Incline Dumbbell Fly', group: 'الصدر', yt: 'https://youtu.be/8oR5hBwbIBc?si=neRSbaQ53L3ZisU0' },
+      { ar: 'كابل كروس أوفر', en: 'Cable Crossover', group: 'الصدر', yt: 'https://youtube.com/shorts/qg3B1Uu6dto?si=ghNw52Rkn_gbp4R0' },
+      { ar: 'بيك دك ماشين', en: 'Pec Deck Machine', group: 'الصدر', yt: 'https://youtu.be/NPa8YvUg4CM?si=px2VA5fgq-jgWPgK' },
+      { ar: 'ديبس للصدر', en: 'Chest Dips', group: 'الصدر', yt: 'https://youtube.com/shorts/4ua3MzaU0QU?si=rU9um-jFfH5rzvCw' },
+      { ar: 'بوش أب', en: 'Push-up', group: 'الصدر', yt: 'https://youtu.be/WDIpL0pjun0?si=tIbYAdeE4-PN6TLz' },
+      // الظهر - BACK
+      { ar: 'عقلة قبضة واسعة', en: 'Wide-Grip Pull-up', group: 'الظهر', yt: 'https://youtu.be/dWB-hEfgMD4?si=NqUiGwIoD-nrObb7' },
+      { ar: 'عقلة قبضة عكسية', en: 'Chin-up', group: 'الظهر', yt: 'https://youtube.com/shorts/E9vvwfxSZFc?si=B3m42ZdVbj9C5Twf' },
+      { ar: 'سحب أمامي بار', en: 'Lat Pulldown', group: 'الظهر', yt: 'https://youtube.com/shorts/hnSqbBk15tw?si=aiK5JoVjtgIA4JRL' },
+      { ar: 'تجديف بار منحني', en: 'Barbell Bent-Over Row', group: 'الظهر', yt: 'https://youtu.be/6FZHJGzMFEc?si=oLhKlykitsJ_qcym' },
+      { ar: 'تجديف دمبل بذراع واحدة', en: 'Single-Arm Dumbbell Row', group: 'الظهر', yt: 'https://youtu.be/DMo3HJoawrU?si=Xi_THk1whVEeBNv3' },
+      { ar: 'تجديف تي بار', en: 'T-Bar Row', group: 'الظهر', yt: 'https://youtube.com/shorts/fgSyNdEsqlM?si=3wiXirZcuFplw14e' },
+      { ar: 'تجديف كابل جالس', en: 'Seated Cable Row', group: 'الظهر', yt: 'https://youtu.be/UCXxvVItLoM?si=lXMvn_BmYT6s69Y6' },
+      { ar: 'ديدليفت', en: 'Deadlift', group: 'الظهر', yt: 'https://youtube.com/shorts/ZaTM37cfiDs?si=JPjp9SYW3tvbYStt' },
+      { ar: 'ديدليفت روماني', en: 'Romanian Deadlift', group: 'الظهر', yt: 'https://youtube.com/shorts/5rIqP63yWFg?si=GS2wy8q1jJ2aBmnL' },
+      { ar: 'هايبر إكستنشن', en: 'Hyperextension (Back Extension)', group: 'الظهر', yt: 'https://youtube.com/shorts/Wpreb69h2fE?si=eEZBxKREzITehvK2' },
+      { ar: 'بول أوفر', en: 'Pullover', group: 'الظهر', yt: 'https://youtube.com/shorts/zhfM1Jp77ak?si=0FMXjgboAYmMCNWk' },
+      { ar: 'فيس بول', en: 'Face Pull', group: 'الظهر', yt: 'https://youtube.com/shorts/RYHUTv7nnrg?si=GI1zAC0cgJMicO9h' },
+      // الأكتاف - SHOULDERS
+      { ar: 'بريس عسكري بار', en: 'Military (Overhead) Barbell Press', group: 'الأكتاف', yt: 'https://youtu.be/G2qpTG1Eh40?si=BXwKKmoBk11EX58P' },
+      { ar: 'بريس دمبل واقف أو جالس', en: 'Dumbbell Shoulder Press', group: 'الأكتاف', yt: 'https://youtu.be/HzIiNhHhhtA?si=dl-5g9oI1JNufasI' },
+      { ar: 'أرنولد برس', en: 'Arnold Press', group: 'الأكتاف', yt: 'https://youtu.be/X60-yTMOJfw?si=P5_i9A-XoRLkPzr7' },
+      { ar: 'رفرفة جانبية دمبل', en: 'Lateral Raise', group: 'الأكتاف', yt: 'https://youtu.be/XPPfnSEATJA?si=srODw5Lj_YUteN1Y' },
+      { ar: 'رفرفة أمامية دمبل', en: 'Front Raise', group: 'الأكتاف', yt: 'https://youtu.be/hRJ6tR5-if0?si=-SpMvcjkno0kzVva' },
+      { ar: 'رفرفة خلفية بينت أوفر', en: 'Bent-Over Rear Delt Raise', group: 'الأكتاف', yt: 'https://youtu.be/34gVHrkaiz0?si=ruHFrMmdXAdTW2xf' },
+      { ar: 'ريفرس بيك دك', en: 'Reverse Pec Deck', group: 'الأكتاف', yt: 'https://youtube.com/shorts/P5CXx_jgTDE?si=2Sba0s9y39ZGCNab' },
+      { ar: 'أب رايت رو', en: 'Upright Row', group: 'الأكتاف', yt: 'https://youtu.be/Ub6QruNKfbY?si=mmFFob3hpZSGOg9_' },
+      { ar: 'أراوند ذا وورلد', en: 'Around the World', group: 'الأكتاف', yt: 'https://youtu.be/N_7ULJYf_hw?si=y-TGRPbk98n66SBX' },
+      { ar: 'شراج بار أو دمبل', en: 'Barbell/Dumbbell Shrug', group: 'الأكتاف', yt: 'https://youtu.be/M_MjF5Nm_h4?si=t5d_9hhS0UVk7Znq' },
+      // الترايسبس - TRICEPS
+      { ar: 'تركيب حبل كابل', en: 'Cable Tricep Pushdown (Rope)', group: 'الترايسبس', yt: 'https://youtu.be/-xa-6cQaZKY?si=RXj3I7LVLihXklpf' },
+      { ar: 'بار مستقيم كابل', en: 'Cable Pushdown (Straight Bar)', group: 'الترايسبس', yt: 'https://youtu.be/6Fzep104f0s?si=XVZTlbwQFw21ot9x' },
+      { ar: 'سكال كراشر', en: 'Skull Crusher (Lying Extension)', group: 'الترايسبس', yt: 'https://youtu.be/l3rHYPtMUo8?si=dngjm3HNzbwgtcNm' },
+      { ar: 'ديبس ترايسبس', en: 'Tricep Dips', group: 'الترايسبس' },
+      { ar: 'كلوز جريب بنش', en: 'Close-Grip Bench Press', group: 'الترايسبس', yt: 'https://youtu.be/FiQUzPtS90E?si=8umCMSMzlAVPFCxA' },
+      { ar: 'إكستنشن دمبل فوق الراس', en: 'Overhead Dumbbell Extension', group: 'الترايسبس', yt: 'https://youtube.com/shorts/b_r_LW4HEcM?si=PXnYx0PtajGfy1kA' },
+      { ar: 'كيك باك دمبل', en: 'Tricep Kickback', group: 'الترايسبس' },
+      // البايسبس - BICEPS
+      { ar: 'كيرل بار', en: 'Barbell Curl', group: 'البايسبس', yt: 'https://youtube.com/shorts/yXCFBwZ4LLU?si=-vutlv5Iybxo3dUZ' },
+      { ar: 'كيرل دمبل بديل', en: 'Alternating Dumbbell Curl', group: 'البايسبس', yt: 'https://youtu.be/iixND1P2lik?si=f45iPIQPfTRsURzT' },
+      { ar: 'كيرل هامر', en: 'Hammer Curl', group: 'البايسبس', yt: 'https://youtu.be/0IAM2YtviQY?si=QD5fplaoEG8XQJ_J' },
+      { ar: 'كيرل تركيز', en: 'Concentration Curl', group: 'البايسبس', yt: 'https://youtu.be/ZcU2hN76UyA?si=bvkTl4k2W0to6DaQ' },
+      { ar: 'كيرل كابل', en: 'Cable Curl', group: 'البايسبس', yt: 'https://youtu.be/CWH5J_7kzjM?si=61smn1QO05l5fewn' },
+      { ar: 'كيرل سكوت بريتشر', en: 'Preacher Curl', group: 'البايسبس', yt: 'https://youtu.be/sxA__DoLsgo?si=EvYVkYyMhFAJz-eM' },
+      { ar: 'كيرل إيز بار', en: 'EZ-Bar Curl', group: 'البايسبس' },
+      { ar: 'كيرل 21', en: '21s Curl', group: 'البايسبس' },
+      // الساعد - FOREARMS
+      { ar: 'ريست كيرل', en: 'Wrist Curl', group: 'الساعد' },
+      { ar: 'ريفرس ريست كيرل', en: 'Reverse Wrist Curl', group: 'الساعد', yt: 'https://youtu.be/2wPpcJBe03o?si=urojXzxSFu2wEB4b' },
+      { ar: 'ريفرس كيرل بار', en: 'Reverse Barbell Curl', group: 'الساعد' },
+      { ar: 'فارمر ووك', en: "Farmer's Walk", group: 'الساعد' },
+      // الكوادز - QUADS
+      { ar: 'سكوات بار حر', en: 'Barbell Back Squat', group: 'الأرجل - كوادز', yt: 'https://youtube.com/shorts/PPmvh7gBTi0?si=gNLE3CElENNNp-7I' },
+      { ar: 'سكوات أمامي', en: 'Front Squat', group: 'الأرجل - كوادز', yt: 'https://youtu.be/HHxNbhP16UE?si=EyiJSjT0Ox2UfDK1' },
+      { ar: 'ليج برس', en: 'Leg Press', group: 'الأرجل - كوادز', yt: 'https://youtube.com/shorts/nDh_BlnLCGc?si=GHFdKURDzCpFOtdo' },
+      { ar: 'ليج إكستنشن', en: 'Leg Extension', group: 'الأرجل - كوادز', yt: 'https://youtube.com/shorts/ztNBgrGy6FQ?si=v5nDasHSBY4RxyuN' },
+      { ar: 'لانج دمبل أو بار', en: 'Lunges', group: 'الأرجل - كوادز' },
+      { ar: 'بلغاريان سبليت سكوات', en: 'Bulgarian Split Squat', group: 'الأرجل - كوادز', yt: 'https://youtu.be/uqI3GVwfToU?si=rhk7r0JElXoSCdsD' },
+      { ar: 'هاك سكوات', en: 'Hack Squat', group: 'الأرجل - كوادز', yt: 'https://youtu.be/rYgNArpwE7E?si=fy3a9rj8tt6Pd_pk' },
+      { ar: 'سكوات جوبلت', en: 'Goblet Squat', group: 'الأرجل - كوادز', yt: 'https://youtu.be/yTDROg8zZsU?si=3Tk1R2fNR2phJ5D0' },
+      { ar: 'بيستول سكوات', en: 'Pistol Squat', group: 'الأرجل - كوادز' },
+      // الهامسترينج والجلوتس - HAMSTRINGS & GLUTES
+      { ar: 'ليج كيرل جالس أو مستلقي', en: 'Leg Curl (Seated/Lying)', group: 'الهامسترينج والجلوتس', yt: 'https://youtu.be/Orxowest56U?si=Ng4_a49wvuSH7mIm' },
+      { ar: 'ستيف ليج ديدليفت', en: 'Stiff-Leg Deadlift', group: 'الهامسترينج والجلوتس', yt: 'https://youtu.be/cYKYGwcg0U8?si=BxdNPzSzH62y-fly' },
+      { ar: 'هيب ثراست', en: 'Hip Thrust', group: 'الهامسترينج والجلوتس', yt: 'https://youtu.be/8RwbLtfLu6A?si=GRDuKIHN55oe4qwJ' },
+      { ar: 'جلوت بريدج', en: 'Glute Bridge', group: 'الهامسترينج والجلوتس', yt: 'https://youtu.be/SKOMwg1JLrU?si=USWHcr52uPKuebjp' },
+      { ar: 'كيك باك كابل للجلوت', en: 'Cable Glute Kickback', group: 'الهامسترينج والجلوتس', yt: 'https://youtube.com/shorts/x5eT_Pgzgno?si=C5IGJ714JFVy4yUB' },
+      { ar: 'جود مورنينج', en: 'Good Morning', group: 'الهامسترينج والجلوتس' },
+      { ar: 'سينجل ليج ديدليفت', en: 'Single-Leg Deadlift', group: 'الهامسترينج والجلوتس' },
+      // السمانة - CALVES
+      { ar: 'كالف رايز واقف', en: 'Standing Calf Raise', group: 'السمانة', yt: 'https://youtube.com/shorts/wlqTemUXPXY?si=Sykt1ZHK8I8b7C2H' },
+      { ar: 'كالف رايز جالس', en: 'Seated Calf Raise', group: 'السمانة', yt: 'https://youtu.be/Yh5TXz99xwY?si=e7JbMZPzlrhUa5xj' },
+      { ar: 'كالف رايز على ليج برس', en: 'Leg Press Calf Raise', group: 'السمانة', yt: 'https://youtu.be/KxEYX_cuesM?si=Q1bJghC496g4KP7x' },
+      { ar: 'دونكي كالف رايز', en: 'Donkey Calf Raise', group: 'السمانة', yt: 'https://youtu.be/WbBJmFQsIMA?si=tywqa5tALBWY8nmk' },
+      // البطن والكور - ABS & CORE
+      { ar: 'كرانش', en: 'Crunch', group: 'البطن والكور', yt: 'https://youtu.be/oHiTqXFreN8?si=36vr3rujGNmPtKsP' },
+      { ar: 'ليج رايز معلق', en: 'Hanging Leg Raise', group: 'البطن والكور', yt: 'https://youtu.be/Nw0LOKe3_l8?si=ucbw1B0iLtSTAonA' },
+      { ar: 'بلانك', en: 'Plank', group: 'البطن والكور', yt: 'https://youtube.com/shorts/xe2MXatLTUw?si=cWoqhD_LPsNH0PSP' },
+      { ar: 'سايد بلانك', en: 'Side Plank', group: 'البطن والكور' },
+      { ar: 'كابل كرانش', en: 'Cable Crunch', group: 'البطن والكور', yt: 'https://youtu.be/6GMKPQVERzw?si=f5N6MZg-mmigJ2uU' },
+      { ar: 'راشن تويست', en: 'Russian Twist', group: 'البطن والكور', yt: 'https://youtu.be/ZDQcxDR-fW0?si=fLvzeE7dMRrJrWX6' },
+      { ar: 'في أب', en: 'V-Up', group: 'البطن والكور', yt: 'https://youtu.be/NxkukiEoh3g?si=ldJ7j5GU2Ye6nWnU' },
+      { ar: 'أب ويل رول أوت', en: 'Ab Wheel Rollout', group: 'البطن والكور', yt: 'https://youtu.be/kyTWFd4f_ME?si=kvKtw0KNyn4f79Ss' },
+      { ar: 'بايسيكل كرانش', en: 'Bicycle Crunch', group: 'البطن والكور', yt: 'https://youtu.be/cbKIDZ_XyjY?si=5jj6gNMkeizMNON5' },
+      { ar: 'كابل وود تشوب', en: 'Cable Woodchop', group: 'البطن والكور', yt: 'https://youtu.be/iWxTGXIViro?si=zQ6YKc_nNuYT0at9' },
+      { ar: 'بيرد دوج', en: 'Bird Dog', group: 'البطن والكور', yt: 'https://youtu.be/vzU5xrs1gMQ?si=oP-ZrJvIoKwC72B_' },
+      // الرقبة - NECK
+      { ar: 'نيك فليكشن يدوي', en: 'Manual Neck Flexion', group: 'الرقبة' },
+      { ar: 'نيك إكستنشن يدوي', en: 'Manual Neck Extension', group: 'الرقبة' },
+      { ar: 'نيك هارنس', en: 'Neck Harness Exercise', group: 'الرقبة' },
+      { ar: 'ليتيرال نيك فليكس', en: 'Lateral Neck Flexion', group: 'الرقبة' },
+      // أوليمبيك - OLYMPIC
+      { ar: 'كلين اند جيرك', en: 'Clean and Jerk', group: 'أوليمبيك' },
+      { ar: 'سناتش', en: 'Snatch', group: 'أوليمبيك' },
+      { ar: 'باور كلين', en: 'Power Clean', group: 'أوليمبيك' },
+      { ar: 'هاي بول', en: 'High Pull', group: 'أوليمبيك' },
+      { ar: 'بوكس سكوات', en: 'Box Squat', group: 'أوليمبيك' },
+      // انفجاري - PLYOMETRIC
+      { ar: 'بوكس جامب', en: 'Box Jump', group: 'انفجاري', yt: 'https://youtu.be/VqOow4Yuk_o?si=_XVWJ9EaDDvf9tMF' },
+      { ar: 'جامب سكوات', en: 'Jump Squat', group: 'انفجاري', yt: 'https://youtu.be/YGGq0AE5Uyc?si=hfL2_AsglYN5b2dz' },
+      { ar: 'بيربي', en: 'Burpee', group: 'انفجاري', yt: 'https://youtu.be/qFMAcq6dsxs?si=3axVUjOXIG47Cyne' },
+      { ar: 'كلاب بوش أب', en: 'Clap Push-up', group: 'انفجاري', yt: 'https://youtu.be/Z9psWZT0WuQ?si=6Nk1AQebgiNa3Lwm' },
+      { ar: 'برود جامب', en: 'Broad Jump', group: 'انفجاري' },
+      { ar: 'ميديسن بول سلام', en: 'Medicine Ball Slam', group: 'انفجاري' },
+      { ar: 'سكوات جامب', en: 'Squat Jump', group: 'انفجاري' },
+      // وظيفي - FUNCTIONAL
+      { ar: 'كيتل بيل سوينج', en: 'Kettlebell Swing', group: 'وظيفي', yt: 'https://youtu.be/1cVT3ee9mgU?si=P7lvWpi3uiXJzZ63' },
+      { ar: 'باتل روبس', en: 'Battle Ropes', group: 'وظيفي', yt: 'https://youtu.be/DfuvSn73Up4?si=i0sp6ryUYCbABe4R' },
+      { ar: 'تاير فليب', en: 'Tire Flip', group: 'وظيفي' },
+      { ar: 'سليد بوش أو بول', en: 'Sled Push/Pull', group: 'وظيفي' },
+      { ar: 'سليدج هامر سوينج', en: 'Sledgehammer Swings', group: 'وظيفي' },
+      { ar: 'تي آر إكس رو أو بريس', en: 'TRX Row/Press', group: 'وظيفي' },
+      { ar: 'ماونتن كلايمر', en: 'Mountain Climber', group: 'وظيفي' },
+      { ar: 'إنفرتد رو', en: 'Inverted Row', group: 'وظيفي' },
+      { ar: 'هاندستاند بوش أب', en: 'Handstand Push-up', group: 'وظيفي' },
+      // اتزان - STABILITY
+      { ar: 'بوسو بول سكوات', en: 'Bosu Ball Squat', group: 'اتزان', yt: 'https://youtu.be/nL67Ic0KChc?si=P423TwF0W0SCc2GZ' },
+      { ar: 'سينجل ليج بلانك', en: 'Single-Leg Plank', group: 'اتزان', yt: 'https://youtu.be/OgkpItr9DOY?si=l9Q0HUGysgVTXjUi' },
+      { ar: 'كابل سكوات', en: 'Cable Squat', group: 'اتزان' },
+      { ar: 'كابل لاترال رايز', en: 'Cable Lateral Raise', group: 'اتزان' },
+      { ar: 'كابل بول ثرو', en: 'Cable Pull-Through', group: 'اتزان', yt: 'https://youtu.be/pv8e6OSyETE?si=e0v5vIP5wmqjZLHc' },
+      { ar: 'سميث ماشين لانج', en: 'Smith Machine Lunge', group: 'اتزان' },
+      { ar: 'ريفيرس هايبر ماشين', en: 'Reverse Hyper Machine', group: 'اتزان' }
+    ];
+
+    // بحث في قاعدة البيانات
+    function searchExercises(query) {
+      if (!query || query.length < 1) return [];
+      const q = query.toLowerCase().trim();
+      const results = [];
+      for (let i = 0; i < EXERCISES_DB.length; i++) {
+        const ex = EXERCISES_DB[i];
+        if (ex.ar.includes(q) || ex.en.toLowerCase().includes(q) || ex.group.includes(q)) {
+          results.push({ ...ex, dbIndex: i });
+          if (results.length >= 8) break;
+        }
+      }
+      return results;
+    }
+
+    // اختيار تمرين من الـ dropdown
+    function selectExercise(di, ei, dbIndex) {
+      const ex = EXERCISES_DB[dbIndex];
+      if (!ex) return;
+      S.days[di].exercises[ei].ar = ex.ar;
+      S.days[di].exercises[ei].en = ex.en;
+      S.days[di].exercises[ei].yt = ex.yt || '';
+      
+      const dd = document.getElementById(`dd_${di}_${ei}`);
+      if (dd) dd.style.display = 'none';
+      const arInput = document.getElementById(`ar_${di}_${ei}`);
+      const enInput = document.getElementById(`en_${di}_${ei}`);
+      const ytInput = document.getElementById(`yt_${di}_${ei}`);
+      if (arInput) arInput.value = ex.ar;
+      if (enInput) enInput.value = ex.en;
+      if (ytInput) ytInput.value = ex.yt || '';
+    }
+
+    function handleSearchInput(inputEl, di, ei) {
+      const query = inputEl.value;
+      S.days[di].exercises[ei].ar = query;
+      
+      const dd = document.getElementById(`dd_${di}_${ei}`);
+      if (!dd) return;
+      
+      const results = searchExercises(query);
+      if (results.length === 0) {
+        dd.style.display = 'none';
+        dd.innerHTML = '';
+        return;
+      }
+      
+      dd.style.display = 'block';
+      dd.innerHTML = results.map(ex => {
+        return `<div class="search-item" onclick="selectExercise(${di}, ${ei}, ${ex.dbIndex})">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="item-ar">${e(ex.ar)}</span>
+            <span class="item-group">${e(ex.group)}</span>
+          </div>
+          <span class="item-en">${e(ex.en)}</span>
+        </div>`;
+      }).join('');
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.search-results') && !e.target.closest('.fd input')) {
+        document.querySelectorAll('.search-results').forEach(el => el.style.display = 'none');
+      }
+    });
+
     const S = {
+
       tab: 'client', gen: false,
       co: {
         name: 'Coach. Ahmed Dahby', phone: '01009025348', wa: '97139774', cert: 'ELITE FITNESS & NUTRITION',
@@ -1178,8 +1438,8 @@
         <button class="ex-rm" onclick="S.days[${di}].exercises.splice(${ei}, 1);R()" title="حذف التمرين">✕</button>
         <div class="ex-fields">
           <div class="g2">
-            <div class="fd"><label>اسم التمرين (عربي)</label><input value="${e(ex.ar)}" oninput="S.days[${di}].exercises[${ei}].ar=this.value" placeholder="مثال: رفرفة كابل"></div>
-            <div class="fd"><label>الاسم (إنجليزي)</label><input value="${e(ex.en)}" oninput="S.days[${di}].exercises[${ei}].en=this.value" dir="ltr" placeholder="Cable Fly"></div>
+            <div class="fd" style="position: relative;"><label>اسم التمرين (عربي)</label><input id="ar_${di}_${ei}" value="${e(ex.ar)}" oninput="handleSearchInput(this, ${di}, ${ei})" onfocus="handleSearchInput(this, ${di}, ${ei})" placeholder="مثال: بنش برس بار مسطح" autocomplete="off"><div id="dd_${di}_${ei}" class="search-results" style="display:none;"></div></div>
+            <div class="fd"><label>الاسم (إنجليزي)</label><input id="en_${di}_${ei}" value="${e(ex.en)}" oninput="S.days[${di}].exercises[${ei}].en=this.value" dir="ltr" placeholder="Cable Fly"></div>
           </div>
           <div class="g3">
             <div class="fd"><label>المجموعات (Sets)</label><input value="${e(ex.sets)}" oninput="S.days[${di}].exercises[${ei}].sets=this.value" placeholder="4"></div>
@@ -1188,7 +1448,7 @@
           </div>
           <div class="ex-link">
             <span class="yt-icon">▶️</span>
-            <div class="fd" style="margin:0;flex:1"><input type="url" value="${e(ex.yt)}" oninput="S.days[${di}].exercises[${ei}].yt=this.value" placeholder="رابط فيديو الشرح (YouTube)" dir="ltr"></div>
+            <div class="fd" style="margin:0;flex:1"><input id="yt_${di}_${ei}" type="url" value="${e(ex.yt)}" oninput="S.days[${di}].exercises[${ei}].yt=this.value" placeholder="رابط فيديو الشرح (YouTube)" dir="ltr"></div>
           </div>
         </div>
       </div>`).join('')}
